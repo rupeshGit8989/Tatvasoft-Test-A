@@ -1,6 +1,7 @@
 package com.tatvasoft.test.view
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
@@ -24,6 +25,21 @@ class MainActivity : AppCompatActivity() {
         viewModelFactory = ViewModelFactory(this)
         viewModel = ViewModelProvider(this, viewModelFactory)[MainActivityViewModel::class.java]
 
+        btnClick.setOnClickListener {
+            viewModel.itemsAdapter.setData(ArrayList())
+            val a = editTextNumberSigned.text.toString()
+            if (a.isNotEmpty()) {
+                val num = a.toInt()
+                if (num > 3) {
+                    val isSquare = viewModel.checkPerfectSquare(num)
+                    if (isSquare) {
+                        Log.e("TAG", "true : " + viewModel.squareRoot(num))
+                    } else {
+                        Log.e("TAG", "false: ")
+                    }
+                }
+            }
+        }
 
     }
 
@@ -39,14 +55,6 @@ class MainActivity : AppCompatActivity() {
         for (i in 1..totalItem) {
             viewModel.itemsAdapter.add(Item(0))
         }
-    }
-
-    /**
-     * Check perfect square and return True or False
-     */
-    private fun checkPerfectSquare(x: Int): Boolean {
-        val sq = sqrt(x.toDouble())
-        return sq - floor(sq) == 0.0
     }
 
 }
