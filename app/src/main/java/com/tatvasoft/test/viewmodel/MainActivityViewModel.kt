@@ -1,6 +1,9 @@
 package com.tatvasoft.test.viewmodel
 
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.os.Handler
+import android.os.Looper
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.tatvasoft.test.view.adapter.BtnClickAction
@@ -13,6 +16,10 @@ class MainActivityViewModel(mActivity: Activity) : ViewModel() {
 
     var itemsAdapter: ItemsAdapter
     val btnClickUpdate: MutableLiveData<Boolean> = MutableLiveData()
+    val success: MutableLiveData<Boolean> = MutableLiveData()
+    var randomPositionsList: ArrayList<Int> = ArrayList()
+    var positionsList: ArrayList<Int> = ArrayList()
+    var inputNum: Int = 0
 
     init {
         itemsAdapter = ItemsAdapter(mActivity, object : BtnClickAction {
@@ -31,8 +38,7 @@ class MainActivityViewModel(mActivity: Activity) : ViewModel() {
      */
     fun generateRandomPosition(min: Int, max: Int): Int {
         val r = Random()
-        val position: Int = r.nextInt(max - min + 1) + min
-        return position
+        return r.nextInt(max - min + 1) + min
     }
 
     /**
@@ -55,4 +61,20 @@ class MainActivityViewModel(mActivity: Activity) : ViewModel() {
         } while (t - sqrtroot != 0)
         return sqrtroot.toDouble()
     }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun activateRandomBtn() {
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (randomPositionsList.size > 0) {
+                val pos = generateRandomPosition(0, randomPositionsList.size - 1)
+                positionsList.add(randomPositionsList[pos])
+                itemsAdapter.itemList?.get(randomPositionsList[pos])!!.status = 1
+                itemsAdapter.notifyDataSetChanged()
+                randomPositionsList.remove(randomPositionsList[pos])
+            } else {
+                success.value = true
+            }
+        }, 500)
+    }
+
 }
